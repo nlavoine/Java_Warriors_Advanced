@@ -1,13 +1,13 @@
 package warriors.client.console;
 
-import java.util.Scanner;
-
 import io.vavr.collection.Stream;
 import warriors.contracts.GameState;
 import warriors.contracts.Hero;
 import warriors.contracts.Map;
 import warriors.contracts.WarriorsAPI;
 import warriors.engine.Warriors;
+
+import java.util.Scanner;
 
 public class ClientConsole {
 
@@ -43,3 +43,4 @@ public class ClientConsole {
 			.head();
 	}
 }
+

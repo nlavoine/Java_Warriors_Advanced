@@ -19,3 +19,5 @@ public class Warrior extends BaseHero{
 	}
 
 }
+
+
