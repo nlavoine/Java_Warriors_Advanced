@@ -1,20 +1,15 @@
 package warriors.engine;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
+import io.vavr.control.Option;
 import warriors.contracts.GameId;
 import warriors.contracts.GameState;
 import warriors.contracts.Hero;
 import warriors.contracts.Map;
-import warriors.model.BaseCase;
-import warriors.model.BaseHero;
-import warriors.model.CaseType;
-import warriors.model.EmptyCase;
-import warriors.model.EnnemyCase;
-import warriors.model.EquipmentCase;
-import warriors.model.MapModel;
+import warriors.model.*;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Game implements GameState {
 
@@ -136,4 +131,6 @@ public class Game implements GameState {
 	public String getPlayerName() {
 		return this.playerName;
 	}
+
+
 }

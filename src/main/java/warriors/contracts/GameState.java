@@ -1,6 +1,8 @@
 package warriors.contracts;
 
 import io.vavr.collection.List;
+import io.vavr.control.Option;
+import warriors.engine.Game;
 
 public interface GameState {
 
@@ -21,4 +23,6 @@ public interface GameState {
 	Map getMap();
 	
 	List<String> getLastLog();
+
+
 }

@@ -6,8 +6,8 @@ import io.vavr.control.Option;
 import warriors.contracts.GameId;
 import warriors.contracts.GameState;
 import warriors.contracts.Hero;
-import warriors.contracts.Life;
 import warriors.contracts.Map;
+import warriors.contracts.Life;
 import warriors.contracts.WarriorsAPI;
 import warriors.model.EmptyCase;
 import warriors.model.Ennemy;
@@ -117,5 +117,10 @@ public class Warriors implements WarriorsAPI {
 	public Option<GameState> nextTurn(GameId gameId) {
 		return this.games.get(gameId)
 			.map(Game::nextTurn);
+	}
+
+	@Override
+	public Option<Game> show(GameId gameId) {
+		return this.games.get(gameId);
 	}
 }

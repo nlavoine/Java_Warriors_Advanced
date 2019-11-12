@@ -1,15 +1,17 @@
 package warriors.contracts;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Objects;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public class GameId {
 
-    public static GameId generate() {
+    /*public static GameId generate() {
         return new GameId(UUID.randomUUID());
+    }*/
+    public static GameId generate() {
+        return new GameId(UUID.fromString("756a5724-b3d6-4a49-8211-16928984495b"));
     }
 
     public static GameId parse(String id) {
