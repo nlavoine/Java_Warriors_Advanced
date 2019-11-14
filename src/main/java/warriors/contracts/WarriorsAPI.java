@@ -1,6 +1,7 @@
 package warriors.contracts;
 
 import io.vavr.control.Option;
+import org.reactivestreams.Publisher;
 import warriors.engine.Game;
 
 public interface WarriorsAPI {
@@ -14,5 +15,9 @@ public interface WarriorsAPI {
 	Option<GameState> nextTurn(GameId gameId);
 
 	Option<Game> show(GameId gameId);
+
+    Iterable<Game> listGames();
+
+    Publisher<GameState> observe(GameId gameId);
 
 }

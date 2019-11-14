@@ -18,8 +18,12 @@ public abstract class BaseHero implements Hero {
 
 	public String applyEquipment(EquipmentCase equipment) {
 		if(equipment instanceof LifeCase) {
-			this.life = this.life.plus(equipment.getEquipmentValue());
-		 	return "Votre vie est désormais de : " + this.life.asInt() + " points";
+			if(this.life.asInt() <= 6) {
+				this.life = this.life.plus(equipment.getEquipmentValue());
+				return "Votre vie est désormais de : " + this.life.asInt() + " points";
+			}else{
+				return "Désolé votre vie est au maximum, la potion ne peut être utilisée. Votre vie: " + this.life.asInt() + " points";
+			}
 		} else {
 			if (this.ApplyOffensiveEquipment(equipment)) {
 				return "Votre niveau d'attaque est désormais de : " + this.attack.asInt() + " points";

@@ -2,7 +2,6 @@ package warriors.engine;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
-import io.vavr.control.Option;
 import warriors.contracts.GameId;
 import warriors.contracts.GameState;
 import warriors.contracts.Hero;
@@ -96,7 +95,7 @@ public class Game implements GameState {
 			case BothAlive:
 				appendMessagesToLog(
 					"Vous avez été blessé par l'ennemi mais vous pouvez contiuer votre chemin",
-					"Vous avez " + this.gameHero.getLife() + " points de vie");
+					"Vous avez " + this.gameHero.getLife().asInt() + " points de vie");
 				return GameStatus.IN_PROGRESS;
 		}
 		throw new IllegalStateException();

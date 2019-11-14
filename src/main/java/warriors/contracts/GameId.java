@@ -7,11 +7,9 @@ import java.util.UUID;
 
 public class GameId {
 
-    /*public static GameId generate() {
-        return new GameId(UUID.randomUUID());
-    }*/
     public static GameId generate() {
-        return new GameId(UUID.fromString("756a5724-b3d6-4a49-8211-16928984495b"));
+        return new GameId(UUID.randomUUID());
+        //return new GameId(UUID.fromString("756a5724-b3d6-4a49-8211-16928984495b"));
     }
 
     public static GameId parse(String id) {
