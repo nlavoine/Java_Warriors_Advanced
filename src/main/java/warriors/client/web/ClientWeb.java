@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.vavr.control.Option;
 import io.vavr.jackson.datatype.VavrModule;
 import org.reactivestreams.Publisher;
+import ratpack.exec.Promise;
+import ratpack.func.Action;
+import ratpack.handling.Chain;
 import ratpack.handling.Context;
 import ratpack.server.RatpackServer;
 import ratpack.sse.ServerSentEvents;
@@ -19,7 +22,7 @@ import warriors.serializers.MapSerializer;
 
 public class ClientWeb {
 
-    private WarriorsAPI warriors;
+    public WarriorsAPI warriors;
 
     public ClientWeb() {
         this.warriors = new Warriors();
@@ -29,59 +32,44 @@ public class ClientWeb {
 
         ClientWeb client = new ClientWeb();
 
-
         RatpackServer.start(server -> server
-                .handlers(chain -> chain
-                        //.get("api", ctx -> ctx.render("Hello World"))
-                        //.get("toto/:name", ctx -> ctx.render("Hello "+ ctx.getPathTokens().get("name") + "!"))
-
-                        .all(ctx -> {
-                            ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin", "*");
-                            ctx.getResponse().getHeaders().add("Access-Control-Allow-Headers", "*");
-                            ctx.getResponse().getHeaders().add("content-type", "application/json");
-                            ctx.next();
-
-                        })
-
-                        .get("heroes", ctx -> {
-
-                            ctx.render(client.getAvailableHeroes());
-                        })
-                        .get("maps", ctx -> {
-                            ctx.render(client.getAvailableMaps());
-                        })
-                        .path("games", ctx -> ctx
-                                .byMethod(s -> s
-                                        .get(() -> {
-                                            ctx.render(client.getGamesFromApi(ctx));
-
-                                        })
-                                        .post(() -> {
-                                            client.createGameFromApi(ctx);
-                                        })
-                                )
-                        )
-
-                        .path("games/:gameId", ctx -> ctx
-                                .byMethod(s -> s
-                                        .get(() -> {
-                                            client.getGameFromApi(ctx);
-                                        })
-                                )
-                        )
-                        .post("games/:gameId/turns", ctx -> client.nextTurnFromApi(ctx))
-
-                )
+                .handlers(client.handlers())
         );
 
     }
 
+    public Action<Chain> handlers() {
+        return chain -> chain
+                .get("/", ctx -> ctx.render("Hello World"))
+
+                .all(ctx -> {
+                    ctx.getResponse().getHeaders().add("Access-Control-Allow-Origin", "*");
+                    ctx.getResponse().getHeaders().add("Access-Control-Allow-Headers", "*");
+                    ctx.getResponse().getHeaders().add("content-type", "application/json");
+                    ctx.next();
+
+                })
+
+                .get("heroes", ctx -> ctx.render(getAvailableHeroes()))
+                .get("maps", ctx -> ctx.render(getAvailableMaps()))
+                .path("games", ctx -> ctx
+                        .byMethod(s -> s
+                                .get(() -> ctx.render(getGamesFromApi(ctx)))
+                                .post(() -> ctx.render(createGameFromApi(ctx)))
+                        )
+                )
+                .path("games/:gameId", ctx -> ctx
+                        .byMethod(s -> s
+                                .get(() -> {
+                                    ctx.render(getGameFromApi(ctx));
+                                })
+                        )
+                )
+                .post("games/:gameId/turns", ctx -> ctx.render(nextTurnFromApi(ctx)));
+    }
 
 
-
-
-
-    private String getAvailableHeroes() throws JsonProcessingException {
+    public String getAvailableHeroes() throws JsonProcessingException {
 
         HeroSerializer heroSerializer = new HeroSerializer(Hero.class);
         ObjectMapper mapper = new ObjectMapper();
@@ -94,7 +82,7 @@ public class ClientWeb {
         return mapper.writeValueAsString(ListHero);
     }
 
-    private String getAvailableMaps() throws JsonProcessingException {
+    public String getAvailableMaps() throws JsonProcessingException {
         MapSerializer mapSerializer = new MapSerializer(Map.class);
         ObjectMapper mapper = new ObjectMapper();
         SimpleModule module =
@@ -105,7 +93,7 @@ public class ClientWeb {
         return mapper.writeValueAsString(this.warriors.availableMaps());
     }
 
-    private String getGamesFromApi(Context ctx) throws JsonProcessingException {
+    public String getGamesFromApi(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new VavrModule());
         return mapper.writeValueAsString(this.warriors.listGames());
@@ -114,10 +102,9 @@ public class ClientWeb {
     }
 
 
+    public Promise<String> createGameFromApi(Context ctx) {
 
-    private void createGameFromApi(Context ctx) {
-
-        ctx.parse(CreateGameAPI.class).then(game -> {
+        return ctx.parse(CreateGameAPI.class).map(game -> {
 
                     int indexHero = 0;
                     Hero selectedHero = null;
@@ -142,14 +129,15 @@ public class ClientWeb {
                     GameState gameState = warriors.createGame(game.playerName, selectedHero, selectedMap);
                     ObjectMapper mapper = new ObjectMapper();
                     mapper.registerModule(new VavrModule());
-                    String JsonGamestate = mapper.writeValueAsString(gameState);
-                    ctx.render(JsonGamestate);
+                    return mapper.writeValueAsString(gameState);
+
                 }
+
         );
 
     }
 
-    private void getGameFromApi(Context ctx) throws JsonProcessingException {
+    public ServerSentEvents getGameFromApi(Context ctx) throws JsonProcessingException {
 
         String gameId = ctx.getPathTokens().get("gameId");
 
@@ -157,9 +145,9 @@ public class ClientWeb {
         Publisher<GameState> publisher = warriors.observe(GameId.parse(gameId));
 
 
-        ServerSentEvents serverSentEvents = ServerSentEvents.serverSentEvents(publisher,
+        return ServerSentEvents.serverSentEvents(publisher,
                 gameEvent -> gameEvent.data(gameToJson(gameEvent.getItem())));
-        ctx.render(serverSentEvents);
+
     }
 
     private String gameToJson(GameState gameState) throws JsonProcessingException {
@@ -169,16 +157,14 @@ public class ClientWeb {
 
     }
 
-    private void nextTurnFromApi(Context ctx) throws JsonProcessingException {
+    private String nextTurnFromApi(Context ctx) throws JsonProcessingException {
         String gameId = ctx.getPathTokens().get("gameId");
         Option<GameState> gameState = this.warriors.nextTurn(GameId.parse(gameId));
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new VavrModule());
-        String JsonGamestate = mapper.writeValueAsString(gameState);
-        ctx.render(JsonGamestate);
+        return mapper.writeValueAsString(gameState);
+
     }
-
-
 
 
 }
