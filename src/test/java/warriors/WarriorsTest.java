@@ -122,41 +122,4 @@ public class WarriorsTest {
 
 
 
-
-
-
-
-
-
-
-
-/*private Action<Chain> chainAction = chain -> {
-        chain.get("", ctx -> ctx.getResponse().send("Hello World"))
-                .get("heroes/", ctx -> ctx.getResponse().send(app.getAvailableHeroes()))
-                .get("maps/", ctx -> ctx.getResponse().send(app.getAvailableMaps()));
-    };*/
-
-
-
-
-    /*@Test
-    void testHeroes() throws Exception {
-        EmbeddedApp.fromHandlers(chainAction)
-                .test(testHttpClient -> {
-                    String expectedHeroes = "[{\"name\":\"Guerrier\",\"life\":5,\"attack\":10,\"index\":0},{\"name\":\"Magicien\",\"life\":3,\"attack\":6,\"index\":1}]";
-                    String expectedMaps = "[{\"name\":\"Default Map\",\"numberOfCases\":64,\"index\":0}]";
-
-                    assertEquals("Hello World", testHttpClient.get("/")
-                            .getBody()
-                            .getText());
-                    assertEquals(expectedHeroes, testHttpClient.get("heroes/")
-                            .getBody()
-                            .getText());
-                    assertEquals(expectedMaps, testHttpClient.get("maps/")
-                            .getBody()
-                            .getText());
-                });
-    }*/
-
-
 }
